@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro</title>
+</head>
+<body>
+    <h2>Formulario de Registro</h2>
+    <form id="registerform">
+        <input type="text" id="nombre" placeholder="Nombre" required>
+        <input type="text" id="segundoNombre" placeholder="Segundo Nombre" required>
+        <input type="text" id="apellidoPaterno" placeholder="Apellido Paterno" required>
+        <input type="text" id="apellidoMaterno" placeholder="Apellido Materno" required>
+        <input type="email" id="email" placeholder="Correo (solo Gmail)" required>
+        <input type="password" id="password" placeholder="Contraseña" required>
+        <input type="password" id="confirmPassword" placeholder="Confirmar Contraseña" required>
+        <button type="submit">Registrarse</button>
+    </form>
+    <p>¿Ya tienes cuenta? <a href="bienvenida.html">Inicia sesión</a></p>
+
+    <script>
+        document.getElementById('registerform').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const nombre = document.getElementById('nombre').value.trim();
+            const segundoNombre = document.getElementById('segundoNombre').value.trim();
+            const apellidoPaterno = document.getElementById('apellidoPaterno').value.trim();
+            const apellidoMaterno = document.getElementById('apellidoMaterno').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            const soloLetras = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
+            const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+
+            if (!soloLetras.test(nombre) || !soloLetras.test(segundoNombre) || !soloLetras.test(apellidoPaterno) || !soloLetras.test(apellidoMaterno)) {
+                alert("Los campos de nombre y apellidos deben contener solo letras.");
+                return;
+            }
+
+            if (!gmailRegex.test(email)) {
+                alert("El correo debe ser una dirección válida de Gmail (ejemplo@gmail.com).");
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                alert("Las contraseñas no coinciden.");
+                return;
+            }
+
+            try {
+                const res = await fetch('http://localhost:3000/api/auth/register', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await res.text();
+                if (res.ok) {
+                    alert('Usuario registrado correctamente');
+                    window.location.href = "bienvenida.html";
+                } else {
+                    alert(data);
+                }
+
+            } catch (error) {
+                alert("Error de red o del servidor.");
+            }
+        });
+    </script>
+</body>
+</html>

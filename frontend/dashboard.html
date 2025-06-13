@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+</head>
+<body>
+    <h2>Dashboard Protegido</h2>
+    <p id="mensaje"></p>
+    <button onclick="cerrarSesion()">Cerrar sesión</button>
+
+    <script>
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+            alert('No tienes token, redirigiendo...');
+            window.location.href = 'bienvenida.html';
+        } else {
+            fetch('http://localhost:3000/api/auth/protected', {
+                method: 'GET',
+                headers: {
+                    'Authorization': token
+                }
+            })
+            .then(res => res.text())
+            .then(data => {
+                document.getElementById('mensaje').innerText = data;
+            })
+            .catch(err => {
+                document.getElementById('mensaje').innerText = 'Token inválido o expirado.';
+                console.log(err);
+            });
+        }
+
+        function cerrarSesion() {
+            localStorage.removeItem('token');
+            window.location.href = 'bienvenida.html';
+        }
+    </script>
+</body>
+</html>
